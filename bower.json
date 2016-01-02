@@ -1,0 +1,28 @@
+{
+  "name": "indexed-memory",
+  "description": "Memory dstore with configurable indices",
+  "main": "index.js",
+  "authors": [
+    "Aaron Hamid <aaron.hamid@gmail.com> (https://github.com/ahamid)"
+  ],
+  "license": "BSD-3-Clause",
+  "keywords": [
+    "dstore",
+    "memory",
+    "indexed"
+  ],
+  "moduleType": [],
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "dojo-util": "~1.10.4",
+    "dojo": "~1.10.4"
+  }
+}
