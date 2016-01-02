@@ -9,9 +9,12 @@ global.dojoConfig = {
   }]
 };
 
-console.log(process.argv);
-process.argv[3] = 'profile=./package.js';
+params = process.argv.slice(2);
+if (!params.length) {
+  params = ['profile=./package.js']
+}
+process.argv.splice(2);
 process.argv[2] = 'load=build';
+process.argv.push.apply(process.argv, params);
 
-console.log(process.argv);
 require('./bower_components/dojo/dojo');
