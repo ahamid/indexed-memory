@@ -5,12 +5,17 @@ define([
     'lodash'
 ], function (declare, arrayUtil, Memory, _) {
   var IndexedMemory = declare(Memory, {
+    constructor: function () {
+      this._skipRebuild = false;
+      this._needsRebuild = false;
+    },
+
     postscript: function () {
       this.inherited(arguments);
 
       this._constructIndices();
 
-      this.regenerateIndices();
+      this.rebuildIndices();
     },
 
     _constructIndices: function () {
@@ -33,9 +38,34 @@ define([
         }
       }, this);
 
-      this.on('add', this.regenerateIndices.bind(this));
-      this.on('update', this.regenerateIndices.bind(this));
-      this.on('delete', this.regenerateIndices.bind(this));
+      this.on('add', this._conditionallyRebuildIndices.bind(this));
+      this.on('update', this._conditionallyRebuildIndices.bind(this));
+      this.on('delete', this._conditionallyRebuildIndices.bind(this));
+    },
+
+    addBulkSync: function (objects, options) {
+      this._bulkOp('addSync', objects, options);
+    },
+
+    putBulkSync: function (objects, options) {
+      this._bulkOp('putSync', objects, options);
+    },
+
+    removeBulkSync: function (ids) {
+      this._bulkOp('removeSync', ids);
+    },
+
+    _bulkOp: function(op, objects, options) {
+      this._skipRebuild = true;
+      try {
+        var that = this;
+        arrayUtil.forEach(objects, function (object) {
+          that[op](object, options);
+        });
+      } finally {
+        this._skipRebuild = false;
+        this._commitRebuildIndices();
+      }
     },
 
     addIndexBy: function (field, func, keyGen) {
@@ -100,13 +130,28 @@ define([
       this[fname] = accessor
     },
 
-    regenerateIndices: function () {
+    _conditionallyRebuildIndices: function () {
+      if (this._skipRebuild) {
+        this._needsRebuild = true;
+      } else {
+        this.rebuildIndices();
+      }
+    },
+
+    _commitRebuildIndices: function () {
+      if (this._needsRebuild) {
+        this.rebuildIndices();
+      }
+    },
+
+    rebuildIndices: function () {
+      this._needsRebuild = false;
       var cfg = null;
       for (var field in this._indices) {
         cfg = this._indices[field];
         this["by" + field] = cfg.func(this.data);
       }
-      //@_updated()
+      this.emit('rebuilt');
     }
   });
   return IndexedMemory;

@@ -116,8 +116,10 @@ define([
 
     test.test('#remove', function () {
       var s = new TestMemory({data: _.clone(RECORDS)});
-      s.removeSync(RECORDS[1].PID);
-      s.removeSync(RECORDS[2].PID);
+      var timesRebuilt = 0;
+      s.on('rebuilt', function() { timesRebuilt++; });
+      s.removeBulkSync([RECORDS[1].PID, RECORDS[2].PID]);
+      assert.equal(timesRebuilt, 1, 'bulk operation resulted in multiple index rebuilds');
 
       assert.sameMembers(s.data, [RECORDS[0], RECORDS[3]]);
       assert.equal(s.getSync(1), RECORDS[0]);
@@ -185,8 +187,10 @@ define([
         Country: 'Germany'
       };
 
-      s.putSync(updatedRecord);
-      s.putSync(addedRecord);
+      var timesRebuilt = 0;
+      s.on('rebuilt', function() { timesRebuilt++; });
+      s.putBulkSync([updatedRecord, addedRecord]);
+      assert.equal(timesRebuilt, 1, 'bulk operation resulted in multiple index rebuilds');
 
       assert.sameMembers(s.data, [RECORDS[0], RECORDS[1], updatedRecord, RECORDS[3], addedRecord]);
       assert.equal(s.getSync(1), RECORDS[0]);
