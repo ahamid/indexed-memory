@@ -2,8 +2,9 @@ define([
   'intern!tdd',
   'intern/chai!assert',
   'dojo/_base/declare',
+  'dojo/Deferred',
   'indexed-memory'
-], function (test, assert, declare, IndexedMemory) {
+], function (test, assert, declare, Deferred, IndexedMemory) {
   var TestMemory = declare(IndexedMemory, {
     idProperty: 'PID',
     indices: [
@@ -216,6 +217,35 @@ define([
         MEXICO: [RECORDS[3]],
         GERMANY: [addedRecord]
       });
+    });
+
+    test.test('reindex occurs before external event', function () {
+      var s = new TestMemory({data: [RECORDS[0]]});
+
+      var deferred = new Deferred();
+      s.on('add', function () {
+        // store should have been reindexed
+        try {
+          assert.deepEqual(s.byName, {
+            ALAN: RECORDS[0],
+            ERIC: record
+          });
+          deferred.resolve();
+        } catch (e) {
+          deferred.reject(e);
+        }
+      });
+
+      var record = {
+        PID: 5,
+        Info: { Name: 'Eric' },
+        Gender: 'M',
+        Country: 'Germany'
+      };
+
+      s.addSync(record);
+
+      return deferred;
     });
   });
 });
