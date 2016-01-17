@@ -14,11 +14,12 @@
   ],
   "author": "Aaron Hamid <aaron.hamid@gmail.com> (https://github.com/ahamid)",
   "license": "BSD-3-Clause",
-  "dependencies": {
-    "dojo": "^1.10.4"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "dstore": "^0.6.22"
+    "dojo": "^1.10.4",
+    "dojo-dstore": "^1.1.0",
+    "intern-geezer": "^2.2.2",
+    "lodash": "^3.10.1"
   },
   "dojoBuild": "package.js"
 }
