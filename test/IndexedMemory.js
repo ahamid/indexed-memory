@@ -247,5 +247,25 @@ define([
 
       return deferred;
     });
+
+    test.test('filtering', function () {
+      var s = new TestMemory({data: _.clone(RECORDS)});
+      var m = s.filter({Gender: 'M'})
+      assert.sameMembers(s.fetchSync(), RECORDS);
+      assert.sameMembers(m.fetchSync(), [RECORDS[0], RECORDS[2]]);
+      assert.sameMembers(s.getByGender('F'), [RECORDS[1], RECORDS[3]]);
+      assert.sameMembers(m.getByGender('F'), []);
+      var record = {
+        PID: 5,
+        Info: { Name: 'Eric' },
+        Gender: 'M',
+        Country: 'Germany'
+      };
+      s.add(record)
+      assert.sameMembers(s.fetchSync(), RECORDS.concat([record]));
+      assert.sameMembers(m.fetchSync(), [RECORDS[0], RECORDS[2], record]);
+      assert.sameMembers(s.getByGender('F'), [RECORDS[1], RECORDS[3]]);
+      assert.sameMembers(m.getByGender('F'), []);
+    });
   });
 });

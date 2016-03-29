@@ -18,6 +18,22 @@ define([
       this.rebuildIndices();
     },
 
+    _createSubCollection: function (kwArgs) {
+      var newCollection = this.inherited(arguments);
+      var ctor = this.constructor;
+      var newIndexedMemory = new ctor({data: newCollection.fetchSync()});
+      newCollection.on('add, update, delete', function() {
+        newIndexedMemory.setData(newCollection.fetchSync());
+      });
+      return newIndexedMemory;
+    },
+
+    setData: function(data) {
+      var result = this.inherited(arguments);
+      this.rebuildIndices();
+      return result;
+    },
+
     _constructIndices: function () {
       var indexDefs = this.indices || [];
 
