@@ -13,25 +13,21 @@ define([
     postscript: function () {
       this.inherited(arguments);
 
-      this._constructIndices();
+      this._initIndices()
+    },
 
+    _initIndices: function() {
+      this._constructIndices();
       this.rebuildIndices();
     },
 
     _createSubCollection: function (kwArgs) {
       var newCollection = this.inherited(arguments);
-      var ctor = this.constructor;
-      var newIndexedMemory = new ctor({data: newCollection.fetchSync()});
-      newCollection.on('add, update, delete', function() {
-        newIndexedMemory.setData(newCollection.fetchSync());
-      });
-      return newIndexedMemory;
-    },
-
-    setData: function(data) {
-      var result = this.inherited(arguments);
-      this.rebuildIndices();
-      return result;
+      // the new collection is constructed as a clone but not reinitialized
+      // call _initIndices (not postscript since that will clear the data array)
+      // to construct and rebuild indices specific to this filtered subset
+      newCollection._initIndices();
+      return newCollection;
     },
 
     _constructIndices: function () {
@@ -161,11 +157,12 @@ define([
     },
 
     rebuildIndices: function () {
+      var fetched = this.fetchSync();
       this._needsRebuild = false;
       var cfg = null;
       for (var field in this._indices) {
         cfg = this._indices[field];
-        this["by" + field] = cfg.func(this.data);
+        this["by" + field] = cfg.func(fetched);
       }
       this.emit('rebuilt');
     }
