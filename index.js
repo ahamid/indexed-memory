@@ -30,6 +30,12 @@ define([
       return newCollection;
     },
 
+    setData: function(data) {
+      var result = this.inherited(arguments);
+      this.rebuildIndices();
+      return result;
+    },
+
     _constructIndices: function () {
       var indexDefs = this.indices || [];
 
