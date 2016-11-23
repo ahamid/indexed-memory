@@ -4,6 +4,11 @@ define([
     'dstore/Memory',
     'lodash'
 ], function (declare, arrayUtil, Memory, _) {
+
+  function IDX_NAME(field) {
+    return "by" + _.upperFirst(field);
+  }
+
   var IndexedMemory = declare(Memory, {
     constructor: function () {
       this._skipRebuild = false;
@@ -131,7 +136,7 @@ define([
 
     _addAccessor: function (field, name, keyGen, dflt) {
       name = name || field;
-      var iname = "by" + _.upperFirst(field);
+      var iname = IDX_NAME(field);
       var fname = "getBy" + _.upperFirst(name);
       keyGen = keyGen || (this._indices[field].keyGen || _.identity);
       var that = this;
@@ -168,7 +173,7 @@ define([
       var cfg = null;
       for (var field in this._indices) {
         cfg = this._indices[field];
-        this["by" + field] = cfg.func(fetched);
+        this[IDX_NAME(field)] = cfg.func(fetched);
       }
       this.emit('rebuilt');
     }
