@@ -7,7 +7,7 @@ define([
       packages: [
         { name: 'dojo', location: 'node_modules/dojo' },
         { name: 'dstore', location: 'node_modules/dojo-dstore' },
-        { name: 'lodash', location: 'node_modules/lodash', main: 'index' },
+        { name: 'lodash', location: 'node_modules/lodash', main: 'lodash' },
         { name: 'indexed-memory', location: '.', main: 'index' }
       ]
     },

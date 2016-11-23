@@ -19,7 +19,7 @@
     "dojo": "^1.10.4",
     "dojo-dstore": "^1.1.0",
     "intern-geezer": "^2.2.2",
-    "lodash": "^3.10.1"
+    "lodash": "^4.17.2"
   },
   "dojoBuild": "package.js"
 }

@@ -87,18 +87,18 @@ define([
     },
 
     addIndexBy: function (field, func, keyGen) {
-      var cb = _.callback(func || field, undefined, 3);
+      var cb = _.iteratee(func || field, undefined, 3);
       var indexFunc = null;
       if (keyGen) {
         indexFunc = _.flow(cb, keyGen);
       } else {
         indexFunc = cb;
       }
-      this.addIndex(field, _.partialRight(_.indexBy, indexFunc), keyGen);
+      this.addIndex(field, _.partialRight(_.keyBy, indexFunc), keyGen);
     },
 
     addGroupBy: function (field, func, keyGen, sort) {
-      var cb = _.callback(func || field, undefined, 3);
+      var cb = _.iteratee(func || field, undefined, 3);
       var indexFunc = null;
       if (keyGen) {
         indexFunc = _.flow(cb, keyGen);
@@ -131,8 +131,8 @@ define([
 
     _addAccessor: function (field, name, keyGen, dflt) {
       name = name || field;
-      var iname = "by" + _.capitalize(field);
-      var fname = "getBy" + _.capitalize(name);
+      var iname = "by" + _.upperFirst(field);
+      var fname = "getBy" + _.upperFirst(name);
       keyGen = keyGen || (this._indices[field].keyGen || _.identity);
       var that = this;
       var accessor = null;
