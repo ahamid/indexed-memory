@@ -23,7 +23,7 @@ define([
 
     _initIndices: function() {
       this._constructIndices();
-      this.rebuildIndices();
+      this.invalidateIndices();
     },
 
     _createSubCollection: function (kwArgs) {
@@ -139,6 +139,7 @@ define([
       var iname = IDX_NAME(field);
       var fname = "getBy" + _.upperFirst(name);
       keyGen = keyGen || (this._indices[field].keyGen || _.identity);
+      this._defineIndex(field, iname)
       var that = this;
       var accessor = null;
       if (dflt) {
@@ -153,17 +154,49 @@ define([
       this[fname] = accessor
     },
 
+    _defineIndex: function(field, iname) {
+      var index
+      Object.defineProperty(this, iname, {
+        get: function() {
+          if (!index) {
+            var fetched = this.fetchSync();
+            var cfg = this._indices[field];
+            index = cfg.func(fetched);
+            this.emit('rebuilt');
+          }
+          return index
+        },
+        set: function(arg) {
+          index = arg
+        }
+      })
+    },
+
     _conditionallyRebuildIndices: function () {
       if (this._skipRebuild) {
         this._needsRebuild = true;
       } else {
-        this.rebuildIndices();
+        this.invalidateIndices();
       }
     },
 
     _commitRebuildIndices: function () {
       if (this._needsRebuild) {
-        this.rebuildIndices();
+        this.invalidateIndices();
+      }
+    },
+
+    invalidateIndices: function() {
+      if (this.lazy) {
+        this.deleteIndices()
+      } else {
+        this.rebuildIndices()
+      }
+    },
+
+    deleteIndices: function() {
+      for (var field in this._indices) {
+        this[IDX_NAME(field)] = null;
       }
     },
 
