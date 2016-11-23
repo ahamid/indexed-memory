@@ -1,6 +1,6 @@
 {
   "name": "indexed-memory",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Memory dstore with configurable indices",
   "main": "index.js",
   "files": "index.js",
