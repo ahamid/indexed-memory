@@ -61,9 +61,9 @@ define([
         }
       }, this);
 
-      this.on('add', this._conditionallyRebuildIndices.bind(this));
-      this.on('update', this._conditionallyRebuildIndices.bind(this));
-      this.on('delete', this._conditionallyRebuildIndices.bind(this));
+      this.on('add', this._updated.bind(this));
+      this.on('update', this._updated.bind(this));
+      this.on('delete', this._updated.bind(this));
     },
 
     addBulkSync: function (objects, options) {
@@ -170,6 +170,10 @@ define([
           index = arg
         }
       })
+    },
+
+    _updated: function() {
+      this._conditionallyRebuildIndices()
     },
 
     _conditionallyRebuildIndices: function () {

@@ -19,7 +19,12 @@ define([
           keyGen: function (country) { return country.toUpperCase(); },
           sort: function (record) { return -record.PID; /* reverse sort by PID */ }
         }
-      ]
+      ],
+      _updated() {
+        this.inherited(arguments)
+        if (this._updateCount == null) this._updateCount = 0
+        this._updateCount++
+      }
     });
 
     var RECORDS = [{
@@ -108,6 +113,7 @@ define([
 
         s.addSync(record);
 
+        assert.equal(s._updateCount, 1)
         assert.sameMembers(s.data, [record, RECORDS[0]]);
         assert.equal(s.getSync(1), RECORDS[0]);
         assert.equal(s.getSync(5), record);
@@ -123,6 +129,7 @@ define([
         var timesRebuilt = 0;
         s.on('rebuilt', function() { timesRebuilt++; });
         s.removeBulkSync([RECORDS[1].PID, RECORDS[2].PID]);
+        assert.equal(s._updateCount, 2)
         assert.equal(timesRebuilt, lazy ? 0 : 1, 'bulk operation resulted in unexpected # of rebuilds');
 
         assert.sameMembers(s.data, [RECORDS[0], RECORDS[3]]);
@@ -154,6 +161,7 @@ define([
 
         s.putSync(updatedRecord);
 
+        assert.equal(s._updateCount, 1)
         assert.sameMembers(s.data, [RECORDS[0], RECORDS[1], updatedRecord, RECORDS[3]]);
         assert.equal(s.getSync(1), RECORDS[0]);
         assert.equal(s.getSync(2), RECORDS[1]);
@@ -196,6 +204,7 @@ define([
         var timesRebuilt = 0;
         s.on('rebuilt', function() { timesRebuilt++; });
         s.putBulkSync([updatedRecord, addedRecord]);
+        assert.equal(s._updateCount, 2)
         assert.equal(timesRebuilt, lazy ? 0 : 1, 'bulk operation resulted in unexpected # of rebuilds');
 
         assert.sameMembers(s.data, [RECORDS[0], RECORDS[1], updatedRecord, RECORDS[3], addedRecord]);
