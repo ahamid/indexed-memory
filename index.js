@@ -179,7 +179,7 @@ define([
 
     _conditionallyRebuildIndices: function () {
       // skip rebuild if either this instance or parent instance is undergoing a bulk operation
-      if (this._skipRebuild || (this.__parent_idx_mem && __parent_idx_mem._skipRebuild)) {
+      if (this._skipRebuild || (this.__parent_idx_mem && this.__parent_idx_mem._skipRebuild)) {
         this._needsRebuild = true;
       } else {
         this.invalidateIndices();
