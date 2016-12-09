@@ -32,6 +32,7 @@ define([
       // call _initIndices (not postscript since that will clear the data array)
       // to construct and rebuild indices specific to this filtered subset
       newCollection._initIndices();
+      newCollection.__parent_idx_mem = this
       return newCollection;
     },
 
@@ -177,7 +178,8 @@ define([
     },
 
     _conditionallyRebuildIndices: function () {
-      if (this._skipRebuild) {
+      // skip rebuild if either this instance or parent instance is undergoing a bulk operation
+      if (this._skipRebuild || (this.__parent_idx_mem && __parent_idx_mem._skipRebuild)) {
         this._needsRebuild = true;
       } else {
         this.invalidateIndices();
