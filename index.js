@@ -79,6 +79,11 @@ define([
       this._bulkOp('removeSync', ids);
     },
 
+    _isSkippingRebuild() {
+      // skip rebuild if either this instance or parent instance is undergoing a bulk operation
+      return this._skipRebuild || (this.__parent_idx_mem && this.__parent_idx_mem._isSkippingRebuild())
+    },
+
     _bulkOp: function(op, objects, options) {
       this._skipRebuild = true;
       try {
@@ -179,7 +184,7 @@ define([
 
     _conditionallyRebuildIndices: function () {
       // skip rebuild if either this instance or parent instance is undergoing a bulk operation
-      if (this._skipRebuild || (this.__parent_idx_mem && this.__parent_idx_mem._skipRebuild)) {
+      if (this._isSkippingRebuild()) {
         this._needsRebuild = true;
       } else {
         this.invalidateIndices();
