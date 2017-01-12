@@ -79,7 +79,7 @@ define([
       this._bulkOp('removeSync', ids);
     },
 
-    _isSkippingRebuild() {
+    _isSkippingRebuild: function() {
       // skip rebuild if either this instance or parent instance is undergoing a bulk operation
       return this._skipRebuild || (this.__parent_idx_mem && this.__parent_idx_mem._isSkippingRebuild())
     },
